@@ -7,18 +7,16 @@ In this simple RPG game, the hero fights the goblin. He has the options to:
 
 """
 class Character:
-    def __init__(self, health, power):
+    def __init__(self, name, health, power):
+        self.name = name
         self.health = health
         self.power = power
 
     def attack(self, enemy):
         enemy.health -= self.power
 
-    def print_status(self, character="hero"):
-        if character == "hero":
-            print(f"You have {self.health} health and {self.power} power.")
-        else:
-            print(f"{character} has {self.health} health and {self.power} power.")
+    def print_status(self):
+            print(f"{self.name} has {self.health} health and {self.power} power.")
 
 # I want the status to print You have for hero
 # I want the status to print X has for other characters
@@ -46,12 +44,12 @@ class Zombie(Character):
         return True
         
 def main():
-    hero = Hero(10, 5)
-    goblin = Goblin(6, 2)
+    hero = Hero("Hero", 10, 5)
+    goblin = Goblin("Goblin", 6, 2)
 
     while goblin.is_alive() and hero.is_alive():
         hero.print_status()
-        goblin.print_status("Goblin")
+        goblin.print_status()
         print()
         print("What do you want to do?")
         print("1. fight goblin")
@@ -75,12 +73,12 @@ def main():
             print("The goblin does %d damage to you." % goblin.power)
 
 def main2():
-    zombie = Zombie(1, 1)
-    hero = Hero(10, 5)
+    zombie = Zombie("Zombie", 1, 1)
+    hero = Hero("Hero", 10, 5)
 
     while zombie.is_alive() and hero.is_alive():
         hero.print_status()
-        zombie.print_status("Zombie")
+        zombie.print_status()
         print()
         print("What do you want to do?")
         print("1. fight zombie")
