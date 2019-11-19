@@ -5,9 +5,10 @@ import random
 import time
 
 class Character(object):
-    def __init__(self, name='<undefined>', health=10, power=5, coins=20, bounty=5):
+    def __init__(self, name='<undefined>', health=10, armor=0, power=5, coins=20, bounty=5):
         self.name = name
         self.health = health
+        self.armor = armor
         self.power = power
         self.coins = coins
         self.bounty = bounty
@@ -28,13 +29,17 @@ class Character(object):
         time.sleep(0.5)
 
     def receive_damage(self, points):
-        self.health -= points
-        print("%s received %d damage." % (self.name, points))
+        points -= self.armor
+        if points <= 0:
+            print(f"Armor absorbed the damage. {self.name} took no damage.")
+        else:
+            self.health -= points
+            print("%s received %d damage. Armor reduced %d damage." % (self.name, points, self.armor))
         if not self.is_alive():
             print("Oh no! %s is dead." % self.name)
 
     def print_status(self):
-        print("%s has %d health and %d power." % (self.name, self.health, self.power))
+        print("%s has %d health and %d power and %d armor." % (self.name, self.health, self.power, self.armor))
 
     def give_bounty(self, enemy):
         enemy.coins += self.bounty
@@ -56,11 +61,11 @@ class Hero(Character):
 
 class Goblin(Character):
     def __init__(self, name):
-        super().__init__(name, 6, 2, 0, 5)
+        super().__init__(name, 6, 0, 2, 0, 5)
 
 class Wizard(Character):
     def __init__(self, name):
-        super().__init__(name, 8, 1, 0, 6)
+        super().__init__(name, 8, 0, 1, 0, 6)
 
     def attack(self, enemy):
         swap_power = random.random() > 0.5
@@ -73,7 +78,7 @@ class Wizard(Character):
 
 class Medic(Character):
     def __init__(self, name):
-        super().__init__(name, 10, 1, 0, 6)
+        super().__init__(name, 10, 2, 1, 0, 6)
     
     def receive_damage(self, points):
         self.health -= points
@@ -87,7 +92,7 @@ class Medic(Character):
 
 class Shadow(Character):
     def __init__(self, name):
-        super().__init__(name, 1, 2, 0, 10)
+        super().__init__(name, 1, 0, 2, 0, 10)
     
     def receive_damage(self, points):
         avoid_damage_chance = random.randint(1, 10)
@@ -101,7 +106,7 @@ class Shadow(Character):
     
 class Zombie(Character):
     def __init__(self, name):
-        super().__init__(name, 1, 1, 0, 100)
+        super().__init__(name, 1, 0, 1, 0, 100)
     
     def is_alive(self):
         if self.health <= 0:
@@ -110,7 +115,7 @@ class Zombie(Character):
 
 class Sayan(Character):
     def __init__(self, name):
-        super().__init__(name, 8, 2, 0, 10)
+        super().__init__(name, 8, 2, 2, 0, 10)
     
     def attack(self, enemy):
         power_up_chance = random.random() > 0.5
@@ -128,7 +133,7 @@ class Sayan(Character):
 
 class Thief(Character):
     def __init__(self, name):
-        super().__init__(name, 6, 3, 0, 6)
+        super().__init__(name, 6, 1, 3, 0, 6)
     
     def attack(self, enemy):
         if not self.is_alive():
@@ -193,6 +198,23 @@ class Tonic:
         character.health += 2
         print("%s's health increased to %d." % (character.name, character.health))
 
+class SuperTonic:
+    cost = 20
+    name = 'SuperTonic'
+    def apply(self, character):
+        if character.health < 10:
+            character.health = 10
+        else:
+            character.health += 5
+        print("%s's health increased to %d." % (character.name, character.health))
+        
+class Armor:
+    cost = 15
+    name = 'armor'
+    def apply(self, hero):
+        hero.armor += 2
+        print(f"{hero.name}'s armor has increased to {hero.armor}")
+
 class Sword:
     cost = 10
     name = 'sword'
@@ -204,7 +226,7 @@ class Store:
     # If you define a variable in the scope of a class:
     # This is a class variable and you can access it like
     # Store.items => [Tonic, Sword]
-    items = [Tonic, Sword]
+    items = [Tonic, Sword, SuperTonic, Armor]
     def do_shopping(self, hero):
         while True:
             print("=====================")
