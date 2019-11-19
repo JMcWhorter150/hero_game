@@ -21,10 +21,10 @@ class Character(object):
         critical_chance = random.randint(1, 5)
         if critical_chance > 4:
             enemy.receive_damage(self.power * 2)
-            print(f"Critical hit! {self.name} did {self.power * 2} damage!")
+            print("Critical hit!")
         else: 
             enemy.receive_damage(self.power)
-        time.sleep(1.5)
+        time.sleep(0.5)
 
     def receive_damage(self, points):
         self.health -= points
@@ -65,10 +65,24 @@ class Wizard(Character):
         if swap_power:
             self.power, enemy.power = enemy.power, self.power
 
+class Medic(Character):
+    def __init__(self, name):
+        super().__init__(name, 10, 1, 0)
+    
+    def receive_damage(self, points):
+        self.health -= points
+        print("%s received %d damage." % (self.name, points))
+        heal_chance = random.randint(1, 5)
+        if heal_chance > 4:
+            print(f"{self.name} healed 2 points!")
+            self.health += 2
+        if not self.is_alive():
+            print("Oh no! %s is dead." % self.name)
+
 class Battle:
     def do_battle(self, hero, enemy):
         print("=====================")
-        print("%s faces the %s" % (hero.name, enemy.name))
+        print("%s faces %s" % (hero.name, enemy.name))
         print("=====================")
         while hero.is_alive() and enemy.is_alive():
             hero.print_status()
@@ -138,7 +152,7 @@ class Store:
                 hero.buy(item)
 
 hero = Hero('Oakley')
-enemies = [Goblin('Bob'), Wizard('Jethro')]
+enemies = [Goblin('Bob'), Wizard('Jethro'), Medic('Mercy')]
 battle_engine = Battle()
 shopping_engine = Store()
 
