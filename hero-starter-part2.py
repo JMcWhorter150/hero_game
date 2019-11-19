@@ -108,16 +108,6 @@ class Shadow(Character):
     def __init__(self, name):
         super().__init__(name, 1, 0, 23, 2, 0, 10)
     
-    def receive_damage(self, points):
-        avoid_damage_chance = random.randint(1, 10)
-        if avoid_damage_chance < 10:
-            print(f"{self.name} dodged the attack and receives no damage!")
-        else:
-            self.health -= points
-            print("%s received %d damage." % (self.name, points))
-            if not self.is_alive():
-                print("Oh no! %s is dead." % self.name)
-    
 class Zombie(Character):
     def __init__(self, name):
         super().__init__(name, 1, 0, 1, 1, 0, 100)
