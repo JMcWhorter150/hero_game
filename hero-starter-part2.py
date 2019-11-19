@@ -6,7 +6,7 @@ import time
 import math
 
 class Character(object):
-    def __init__(self, name='<undefined>', health=10, armor=0, evade=1, power=5, coins=20, bounty=5):
+    def __init__(self, name='<undefined>', health=10, armor=0, evade=1, power=5, coins=20, bounty=5, holy_status=False):
         self.name = name
         self.health = health
         self.armor = armor
@@ -15,6 +15,7 @@ class Character(object):
         self.bounty = bounty
         self.evade = evade
         self.evade_percentage = self.determine_evade(evade)
+        self.holy_status = holy_status
     
     def determine_evade(self, evade):
         evade_percentage = 1 - math.exp(-1*(evade/10))
@@ -23,11 +24,11 @@ class Character(object):
     def change_evade(self, evade):
         self.evade_percentage = self.determine_evade(self.evade)
 
-    def is_alive(self):
+    def is_alive(self, enemy):
         return self.health > 0
 
     def attack(self, enemy):
-        if not self.is_alive():
+        if not self.is_alive(enemy):
             return
         print("%s attacks %s" % (self.name, enemy.name))
         critical_chance = random.randint(1, 5)
@@ -49,7 +50,7 @@ class Character(object):
             else:
                 self.health -= points
                 print("%s received %d damage. Armor reduced %d damage." % (self.name, points, self.armor))
-        if not self.is_alive():
+        if not self.is_alive(enemy):
             print("Oh no! %s is dead." % self.name)
 
     def print_status(self):
@@ -101,21 +102,27 @@ class Medic(Character):
         if heal_chance > 4:
             print(f"{self.name} healed 2 points!")
             self.health += 2
-        if not self.is_alive():
+        if not self.is_alive(enemy):
             print("Oh no! %s is dead." % self.name)
 
 class Shadow(Character):
     def __init__(self, name):
-        super().__init__(name, 1, 0, 23, 2, 0, 10)
+        super().__init__(name, 1, 0, 20, 2, 0, 10)
     
 class Zombie(Character):
     def __init__(self, name):
-        super().__init__(name, 1, 0, 1, 1, 0, 100)
+        super().__init__(name, 1, 0, 1, 1, 0, 20)
     
-    def is_alive(self):
+    def is_alive(self, enemy):
+        if enemy.holy_status:
+            print(f"{enemy.name}'s holy light immolates {self.name}")
+            return False
         if self.health <= 0:
             print(f"{self.name} is a zombie and can't die!")
         return True
+    
+    def is_enemy_holy(self, enemy):
+        return enemy.holy_status
 
 class Sayan(Character):
     def __init__(self, name):
@@ -140,7 +147,7 @@ class Thief(Character):
         super().__init__(name, 6, 1, 15, 3, 0, 6)
     
     def attack(self, enemy):
-        if not self.is_alive():
+        if not self.is_alive(enemy):
             return
         print("%s attacks %s" % (self.name, enemy.name))
         self.steal_coins(enemy)
@@ -165,7 +172,7 @@ class Battle:
         print("=====================")
         print("%s faces %s" % (hero.name, enemy.name))
         print("=====================")
-        while hero.is_alive() and enemy.is_alive():
+        while hero.is_alive(enemy) and enemy.is_alive(hero):
             hero.print_status()
             enemy.print_status()
             time.sleep(1.5)
@@ -187,7 +194,7 @@ class Battle:
                 print("Invalid input %r" % user_input)
                 continue
             enemy.attack(hero)
-        if hero.is_alive():
+        if hero.is_alive(enemy):
             print("You defeated %s" % enemy.name)
             enemy.give_bounty(hero)
             return True
@@ -234,11 +241,18 @@ class Evade:
         hero.change_evade(hero.evade)
         print(f"{hero.name}'s evade chance increased to {round(hero.evade_percentage * 100, 1)}.'")
 
+class HolyWater:
+    cost = 15
+    name = 'holy water'
+    def apply(self, hero):
+        hero.holy_status = True
+        print(f"{hero.name} is no longer afraid of the undying.")
+
 class Store:
     # If you define a variable in the scope of a class:
     # This is a class variable and you can access it like
     # Store.items => [Tonic, Sword]
-    items = [Tonic, Sword, SuperTonic, Armor, Evade]
+    items = [Tonic, Sword, SuperTonic, Armor, Evade, HolyWater]
     def do_shopping(self, hero):
         while True:
             print("=====================")
@@ -259,7 +273,7 @@ class Store:
                 hero.buy(item)
 
 hero = Hero('Oakley')
-enemies = [Goblin('Bob'), Wizard('Jethro'), Medic('Mercy'), Thief('Barry'), Shadow('Matt'), Sayan('Goku')]
+enemies = [Goblin('Bob'), Wizard('Jethro'), Medic('Mercy'), Thief('Barry'), Zombie('Rick'), Shadow('Matt'), Sayan('Goku')]
 # enemies = [Thief('Barry')]
 battle_engine = Battle()
 shopping_engine = Store()
