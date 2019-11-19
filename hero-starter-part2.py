@@ -92,6 +92,16 @@ class Shadow(Character):
             print("%s received %d damage." % (self.name, points))
             if not self.is_alive():
                 print("Oh no! %s is dead." % self.name)
+    
+class Zombie(Character):
+    def __init__(self, name):
+        super().__init__(name, 1, 1, 0)
+    
+    def is_alive(self):
+        if self.health <= 0:
+            print(f"{self.name} is a zombie and can't die!")
+        return True
+
 
 class Battle:
     def do_battle(self, hero, enemy):
@@ -166,8 +176,8 @@ class Store:
                 hero.buy(item)
 
 hero = Hero('Oakley')
-# enemies = [Goblin('Bob'), Wizard('Jethro'), Medic('Mercy'), Shadow('Matt')]
-enemies = [Shadow('Matt')]
+# enemies = [Goblin('Bob'), Wizard('Jethro'), Medic('Mercy'), Shadow('Matt'), Zombie('Rick')]
+enemies = [Zombie('Rick')]
 battle_engine = Battle()
 shopping_engine = Store()
 
