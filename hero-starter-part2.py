@@ -5,11 +5,12 @@ import random
 import time
 
 class Character(object):
-    def __init__(self, name='<undefined>', health=10, power=5, coins=20):
+    def __init__(self, name='<undefined>', health=10, power=5, coins=20, bounty=5):
         self.name = name
         self.health = health
         self.power = power
         self.coins = coins
+        self.bounty = bounty
 
     def is_alive(self):
         return self.health > 0
@@ -35,6 +36,11 @@ class Character(object):
     def print_status(self):
         print("%s has %d health and %d power." % (self.name, self.health, self.power))
 
+    def give_bounty(self, enemy):
+        enemy.coins += self.bounty
+        print(f"{enemy.name} receives {self.bounty} coins from {self.name}'s coin purse.")
+    
+
 class Hero(Character):
     def __init__(self, name):
         super().__init__(name)    
@@ -50,11 +56,11 @@ class Hero(Character):
 
 class Goblin(Character):
     def __init__(self, name):
-        super().__init__(name, 6, 2, 0)
+        super().__init__(name, 6, 2, 0, 5)
 
 class Wizard(Character):
     def __init__(self, name):
-        super().__init__(name, 8, 1, 0)
+        super().__init__(name, 8, 1, 0, 6)
 
     def attack(self, enemy):
         swap_power = random.random() > 0.5
@@ -67,7 +73,7 @@ class Wizard(Character):
 
 class Medic(Character):
     def __init__(self, name):
-        super().__init__(name, 10, 1, 0)
+        super().__init__(name, 10, 1, 0, 6)
     
     def receive_damage(self, points):
         self.health -= points
@@ -81,7 +87,7 @@ class Medic(Character):
 
 class Shadow(Character):
     def __init__(self, name):
-        super().__init__(name, 1, 2, 0)
+        super().__init__(name, 1, 2, 0, 10)
     
     def receive_damage(self, points):
         avoid_damage_chance = random.randint(1, 10)
@@ -95,12 +101,54 @@ class Shadow(Character):
     
 class Zombie(Character):
     def __init__(self, name):
-        super().__init__(name, 1, 1, 0)
+        super().__init__(name, 1, 1, 0, 100)
     
     def is_alive(self):
         if self.health <= 0:
             print(f"{self.name} is a zombie and can't die!")
         return True
+
+class Sayan(Character):
+    def __init__(self, name):
+        super().__init__(name, 8, 2, 0, 10)
+    
+    def attack(self, enemy):
+        power_up_chance = random.random() > 0.5
+        if power_up_chance:
+            self.power = self.power * 2
+            print("%s goes Super-Sayan and doubles his power to %s" % (self.name, self.power))
+        super().attack(enemy)
+
+# class Mimic(Character):
+#     def __init__(self, name):
+#         super().__init__(name, 10, 1, 0)
+    
+#     def change_shape(self):
+        # remains current health but changes to a different character with different moves
+
+class Thief(Character):
+    def __init__(self, name):
+        super().__init__(name, 6, 3, 0, 6)
+    
+    def attack(self, enemy):
+        if not self.is_alive():
+            return
+        print("%s attacks %s" % (self.name, enemy.name))
+        self.steal_coins(enemy)
+        critical_chance = random.randint(1, 5)
+        if critical_chance > 4:
+            enemy.receive_damage(self.power * 2)
+            print("Critical hit!")
+        else: 
+            enemy.receive_damage(self.power)
+        time.sleep(0.5)
+
+    def steal_coins(self, enemy):
+        enemy.coins -= self.power
+        self.bounty += self.power
+        print(f"{self.name} stole {self.power} coins!")
+        
+
 
 
 class Battle:
@@ -131,7 +179,8 @@ class Battle:
                 continue
             enemy.attack(hero)
         if hero.is_alive():
-            print("You defeated the %s" % enemy.name)
+            print("You defeated %s" % enemy.name)
+            enemy.give_bounty(hero)
             return True
         else:
             print("YOU LOSE!")
@@ -176,8 +225,8 @@ class Store:
                 hero.buy(item)
 
 hero = Hero('Oakley')
-# enemies = [Goblin('Bob'), Wizard('Jethro'), Medic('Mercy'), Shadow('Matt'), Zombie('Rick')]
-enemies = [Zombie('Rick')]
+enemies = [Goblin('Bob'), Wizard('Jethro'), Medic('Mercy'), Thief('Barry'), Shadow('Matt'), Sayan('Goku')]
+# enemies = [Thief('Barry')]
 battle_engine = Battle()
 shopping_engine = Store()
 
