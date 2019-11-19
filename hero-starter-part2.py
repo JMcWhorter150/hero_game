@@ -91,10 +91,6 @@ class Hero(Character):
                 choosing_item = False
             else:
                 print("Invalid user input")
-# I want it to display a list of items and their index
-# I want them to choose one
-# I want that item to then apply
-# 
 
 class Goblin(Character):
     def __init__(self, name):
