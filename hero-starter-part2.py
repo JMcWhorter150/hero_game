@@ -79,6 +79,20 @@ class Medic(Character):
         if not self.is_alive():
             print("Oh no! %s is dead." % self.name)
 
+class Shadow(Character):
+    def __init__(self, name):
+        super().__init__(name, 1, 2, 0)
+    
+    def receive_damage(self, points):
+        avoid_damage_chance = random.randint(1, 10)
+        if avoid_damage_chance < 10:
+            print(f"{self.name} dodged the attack and receives no damage!")
+        else:
+            self.health -= points
+            print("%s received %d damage." % (self.name, points))
+            if not self.is_alive():
+                print("Oh no! %s is dead." % self.name)
+
 class Battle:
     def do_battle(self, hero, enemy):
         print("=====================")
@@ -152,7 +166,8 @@ class Store:
                 hero.buy(item)
 
 hero = Hero('Oakley')
-enemies = [Goblin('Bob'), Wizard('Jethro'), Medic('Mercy')]
+# enemies = [Goblin('Bob'), Wizard('Jethro'), Medic('Mercy'), Shadow('Matt')]
+enemies = [Shadow('Matt')]
 battle_engine = Battle()
 shopping_engine = Store()
 
