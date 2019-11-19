@@ -6,7 +6,7 @@ import time
 import math
 
 class Character(object):
-    def __init__(self, name='<undefined>', health=10, armor=0, evade=1, power=5, coins=20, bounty=5, holy_status=False):
+    def __init__(self, name='<undefined>', health=10, armor=0, evade=1, power=5, coins=20, bounty=5,  items=[], holy_status=False):
         self.name = name
         self.health = health
         self.armor = armor
@@ -16,6 +16,7 @@ class Character(object):
         self.evade = evade
         self.evade_percentage = self.determine_evade(evade)
         self.holy_status = holy_status
+        self.items = items
     
     def determine_evade(self, evade):
         evade_percentage = 1 - math.exp(-1*(evade/10))
@@ -34,7 +35,7 @@ class Character(object):
         critical_chance = random.randint(1, 5)
         if critical_chance > 4:
             enemy.receive_damage(self.power * 2)
-            print("Critical hit!")
+            print(f"Critical hit! {self.name} did double damage to {enemy.name}")
         else: 
             enemy.receive_damage(self.power)
         time.sleep(0.5)
@@ -72,7 +73,28 @@ class Hero(Character):
 
     def buy(self, item):
         self.coins -= item.cost
-        item.apply(hero)
+        if item.can_be_used:    
+            self.items.append(item)
+        else:
+            item.apply(hero)
+    
+    def use_item(self, items):
+        print("You have the following items:")
+        for i in range(len(self.items)):
+            print(f"{i}. {self.items[i].name}")
+        choosing_item = True
+        while choosing_item:
+            print("Which item do you want to use? ")
+            user_input = int(input("> "))
+            if user_input in range(len(self.items)):
+                self.items[user_input].apply(hero)
+                choosing_item = False
+            else:
+                print("Invalid user input")
+# I want it to display a list of items and their index
+# I want them to choose one
+# I want that item to then apply
+# 
 
 class Goblin(Character):
     def __init__(self, name):
@@ -135,13 +157,6 @@ class Sayan(Character):
             print("%s goes Super-Sayan and doubles his power to %s" % (self.name, self.power))
         super().attack(enemy)
 
-# class Mimic(Character):
-#     def __init__(self, name):
-#         super().__init__(name, 10, 1, 0)
-    
-#     def change_shape(self):
-        # remains current health but changes to a different character with different moves
-
 class Thief(Character):
     def __init__(self, name):
         super().__init__(name, 6, 1, 15, 3, 0, 6)
@@ -179,14 +194,18 @@ class Battle:
             print("-----------------------")
             print("What do you want to do?")
             print("1. fight %s" % enemy.name)
-            print("2. do nothing")
+            print("2. use an item")
             print("3. flee")
             print("> ",)
             user_input = int(input())
             if user_input == 1:
                 hero.attack(enemy)
             elif user_input == 2:
-                pass
+                if hero.items == []:
+                    print("You have no items.")
+                    continue
+                else:
+                    hero.use_item(hero.items)
             elif user_input == 3:
                 print("Goodbye.")
                 exit(0)
@@ -205,6 +224,7 @@ class Battle:
 class Tonic:
     cost = 5
     name = 'tonic'
+    can_be_used = True
     def apply(self, character):
         character.health += 2
         print("%s's health increased to %d." % (character.name, character.health))
@@ -212,6 +232,7 @@ class Tonic:
 class SuperTonic:
     cost = 20
     name = 'SuperTonic'
+    can_be_used = True
     def apply(self, character):
         if character.health < 10:
             character.health = 10
@@ -222,6 +243,7 @@ class SuperTonic:
 class Armor:
     cost = 15
     name = 'armor'
+    can_be_used = False
     def apply(self, hero):
         hero.armor += 2
         print(f"{hero.name}'s armor has increased to {hero.armor}")
@@ -229,6 +251,7 @@ class Armor:
 class Sword:
     cost = 10
     name = 'sword'
+    can_be_used = False
     def apply(self, hero):
         hero.power += 2
         print("%s's power increased to %d." % (hero.name, hero.power))
@@ -236,6 +259,7 @@ class Sword:
 class Evade:
     cost = 10
     name = 'evade'
+    can_be_used = False
     def apply(self, hero):
         hero.evade += 2
         hero.change_evade(hero.evade)
@@ -244,15 +268,29 @@ class Evade:
 class HolyWater:
     cost = 15
     name = 'holy water'
+    can_be_used = True
     def apply(self, hero):
         hero.holy_status = True
         print(f"{hero.name} is no longer afraid of the undying.")
+
+class Lotto:
+    cost = 1
+    name = 'Lotto'
+    can_be_used = False
+    def apply(self, hero):
+        lotto_ticket = random.randint(0, 1)
+        if lotto_ticket == 0:
+            print("Sorry. You lose.")
+        else:
+            hero.coins += lotto_ticket * 2
+            print(f"You won! You get 2 coins.")
+
 
 class Store:
     # If you define a variable in the scope of a class:
     # This is a class variable and you can access it like
     # Store.items => [Tonic, Sword]
-    items = [Tonic, Sword, SuperTonic, Armor, Evade, HolyWater]
+    items = [Tonic, Sword, SuperTonic, Armor, Evade, HolyWater, Lotto]
     def do_shopping(self, hero):
         while True:
             print("=====================")
