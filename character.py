@@ -29,12 +29,7 @@ class Character(object):
         if not self.is_alive(enemy):
             return
         print("%s attacks %s" % (self.name, enemy.name))
-        critical_chance = random.randint(1, 5)
-        if critical_chance > 4:
-            enemy.receive_damage(self.power * 2)
-            print(f"Critical hit! {self.name} did double damage to {enemy.name}")
-        else: 
-            enemy.receive_damage(self.power)
+        enemy.receive_damage(self.power)
         time.sleep(0.5)
 
     def receive_damage(self, points):

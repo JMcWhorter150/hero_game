@@ -14,10 +14,10 @@ from store import Store
 from thief import Thief
 from wizard import Wizard
 from zombie import Zombie
-
+from mimic import Mimic
 hero = Hero('Oakley')
-enemies = [Goblin('Bob'), Wizard('Jethro'), Medic('Mercy'), Thief('Barry'), Zombie('Rick'), Shadow('Matt'), Sayan('Goku')]
-# enemies = [Thief('Barry')]
+enemies = [Goblin('Bob'), Wizard('Jethro'), Medic('Mercy'), Thief('Barry'), Mimic('Harry'), Zombie('Rick'), Shadow('Matt'), Sayan('Goku')]
+# enemies = [Thief('Barry')] Goblin('Bob'), Wizard('Jethro'), Medic('Mercy'), Thief('Barry'), Zombie('Rick'), Shadow('Matt'), Sayan('Goku'), 
 battle_engine = Battle()
 shopping_engine = Store()
 

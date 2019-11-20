@@ -23,7 +23,11 @@ class Battle:
                     print("You have no items.")
                     continue
                 else:
-                    hero.use_item(hero.items, enemy)
+                    try:
+                        hero.use_item(hero.items, enemy)
+                    except (ValueError, IndexError):
+                        print("Did not choose an eligible item")
+                        continue
             elif user_input == 3:
                 print("Goodbye.")
                 exit(0)

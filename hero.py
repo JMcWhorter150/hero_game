@@ -1,14 +1,34 @@
 from character import Character
 import time
+import random
 
 class Hero(Character):
     def __init__(self, name):
         super().__init__(name)
+        self.is_swapped = False
 
     def restore(self):
         self.health = 10
         print("Hero's heath is restored to %d!" % self.health)
         time.sleep(1)
+
+    def attack(self, enemy):
+        if self.is_swapped:
+            self.power, enemy.power = enemy.power, self.power
+            print(f"{self.name} swaps power with {enemy.name}")
+        if not self.is_alive(enemy):
+            return
+        print("%s attacks %s" % (self.name, enemy.name))
+        critical_chance = random.randint(1, 5)
+        if critical_chance > 4:
+            enemy.receive_damage(self.power * 2)
+            print(f"Critical hit! {self.name} did double damage to {enemy.name}")
+        else: 
+            enemy.receive_damage(self.power)
+        if self.is_swapped:
+            self.power, enemy.power = enemy.power, self.power
+            self.is_swapped = False
+        time.sleep(0.5)
 
     def buy(self, item, enemy):
         if self.coins < item.cost:
