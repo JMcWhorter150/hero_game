@@ -20,6 +20,12 @@ class Thief(Character):
         time.sleep(0.5)
 
     def steal_coins(self, enemy):
-        enemy.coins -= self.power
-        self.bounty += self.power
-        print(f"{self.name} stole {self.power} coins!")
+        if enemy.coins > self.power:
+            enemy.coins -= self.power
+            self.bounty += self.power
+            print(f"{self.name} stole {self.power} coins!")
+        elif enemy.coins == 0:
+            print(f"{enemy.name} has no coins to steal.")
+        else:
+            enemy.coins = 0
+            print(f"{self.name} stole {enemy.name}'s last coins.")

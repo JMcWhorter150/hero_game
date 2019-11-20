@@ -46,9 +46,15 @@ class Mimic(Character):
         self.change_trait()
     
     def steal_coins(self, enemy):
-        enemy.coins -= self.power
-        self.coins += self.power
-        print(f"{self.name} stole {self.power} coins!")
+        if enemy.coins > self.power:
+            enemy.coins -= self.power
+            self.bounty += self.power
+            print(f"{self.name} stole {self.power} coins!")
+        elif enemy.coins == 0:
+            print(f"{enemy.name} has no coins to steal.")
+        else:
+            enemy.coins = 0
+            print(f"{self.name} stole {enemy.name}'s last coins.")
 
     def change_trait(self):
         self.random_trait = random.randint(1, 6)
