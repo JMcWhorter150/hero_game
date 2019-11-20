@@ -5,12 +5,13 @@ from lotto import Lotto
 from supertonic import SuperTonic
 from sword import Sword
 from tonic import Tonic
+from swap import Swap
 
 class Store:
     # If you define a variable in the scope of a class:
     # This is a class variable and you can access it like
     # Store.items => [Tonic, Sword]
-    items = [Tonic, Sword, SuperTonic, Armor, Evade, HolyWater, Lotto]
+    items = [Tonic, Sword, SuperTonic, Armor, Evade, HolyWater, Lotto, Swap]
     def do_shopping(self, hero, enemy):
         while True:
             print("=====================")

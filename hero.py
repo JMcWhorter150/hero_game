@@ -3,7 +3,7 @@ import time
 
 class Hero(Character):
     def __init__(self, name):
-        super().__init__(name)    
+        super().__init__(name)
 
     def restore(self):
         self.health = 10
@@ -19,6 +19,7 @@ class Hero(Character):
             self.items.append(item)
         else:
             item.apply(self, enemy)
+
     def use_item(self, items, enemy):
         print("You have the following items:")
         for i in range(len(self.items)):
@@ -28,7 +29,8 @@ class Hero(Character):
             print("Which item do you want to use? ")
             user_input = int(input("> "))
             if user_input in range(len(self.items)):
-                self.items[user_input].apply(self, enemy)
+                self.items[user_input].apply(self)
+                del self.items[user_input]
                 choosing_item = False
             else:
                 print("Invalid user input")

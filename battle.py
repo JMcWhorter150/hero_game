@@ -1,6 +1,5 @@
 import time
 
-
 class Battle:
     def do_battle(self, hero, enemy):
         print("=====================")
@@ -24,7 +23,7 @@ class Battle:
                     print("You have no items.")
                     continue
                 else:
-                    hero.use_item(hero.items)
+                    hero.use_item(hero.items, enemy)
             elif user_input == 3:
                 print("Goodbye.")
                 exit(0)
@@ -32,6 +31,7 @@ class Battle:
                 print("Invalid input %r" % user_input)
                 continue
             enemy.attack(hero)
+
         if hero.is_alive(enemy):
             print("You defeated %s" % enemy.name)
             enemy.give_bounty(hero)
