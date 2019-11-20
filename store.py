@@ -23,10 +23,17 @@ class Store:
                 item = Store.items[i]
                 print("%d. buy %s (%d)" % (i + 1, item.name, item.cost))
             print("10. leave")
-            user_input = int(input("> "))
+            try:
+                user_input = int(input("> "))
+            except ValueError:
+                print("Not a valid choice.")
+                continue
             if user_input == 10:
                 break
             else:
-                ItemToBuy = Store.items[user_input - 1]
-                item = ItemToBuy()
-                hero.buy(item, enemy)
+                try:
+                    ItemToBuy = Store.items[user_input - 1]
+                    item = ItemToBuy()
+                    hero.buy(item, enemy)
+                except IndexError:
+                    print("Not a valid choice")
